@@ -11,6 +11,7 @@ const btnNine = document.getElementById("btnNine");
 
 const clearBtn = document.getElementById("clearBtn");
 const signalConvert = document.getElementById("signalConvert");
+const commaBtn = document.getElementById("comma");
 
 const divideBtn = document.getElementById("divideBtn")
 const multiplyBtn = document.getElementById("multiplyBtn")
@@ -19,90 +20,114 @@ const sumBtn = document.getElementById("sumBtn");
 const equalBtn = document.getElementById("equalBtn");
 
 const displayContent = document.getElementById("displayContent")
-const pressedBtns = document.querySelectorAll('.crimson')
 
 const numberChoice = [];
 let firstValue = 0;
 let secondValue = 0;
+let finalResult = 0;
 let operator = "";
 
-function sumChoice(operatorChoice) {  // Function to sum
-    const displayTest = numberChoice.reduce((total, element) => total + element, "") // Sum
-    firstValue = parseInt(displayTest); // Converts to number type
+function operatorClick(operatorChoice) {  // Function to sum
+    const agroupArray = numberChoice.reduce((total, element) => total + element, "") // Sum
+    firstValue = parseFloat(agroupArray); // Converts to number type
     displayContent.innerHTML = 0 // Clear the display
     numberChoice.length = 0; // Clear the array numberChoice
+    let result 
     
-    if(sumBtn.classList.contains("crimson")) {
-        console.log("entrou no if")
-        operator = operatorChoice
-        sumBtn.classList.remove("crimson")
-        sumBtn.classList.add("special") }
-    else if (sumBtn.classList.contains("special")) {
-        console.log("entrou no else") 
-        operator = "";
-        sumBtn.classList.remove("special");
-        sumBtn.classList.add("crimson")
+    switch (operatorChoice) {
+        case "Sum":
+            result = clickingBtn(sumBtn, "special", "crimson");
+            if (result === "Unpressed") {operator = "" }
+            else { operator = operatorChoice }
+            break;
+        case "Divide":
+            result = clickingBtn(divideBtn, "special", "crimson");
+            if (result === "Unpressed") {operator = "" }
+            else { operator = operatorChoice }
+            break;  
+        case "Multiply":
+            result = clickingBtn(multiplyBtn, "special", "crimson");
+            if (result === "Unpressed") {operator = "" }
+            else { operator = operatorChoice }
+            break;
+        case "Minus":
+            result = clickingBtn(minusBtn, "special", "crimson");
+            if (result === "Unpressed") {operator = "" }
+            else { operator = operatorChoice }
+            break;          
     }
 }       
 
-
-function minusChoice() { // Function to minus
-    const displayTest = numberChoice.reduce((total, element) => total + element, "") // Sum
-    firstValue = parseInt(displayTest); // Converts to number type
-    numberChoice.length = 0; // Clear the numberChoice
-    operator = "Minus" 
+function clickingBtn(button, special, crimson) {     
+    if(button.classList.contains(special)) {
+        button.classList.remove(special);
+        button.classList.add(crimson);
+        return "Unpressed" }
+    else if(button.classList.contains(crimson)) {
+        button.classList.remove(crimson);
+        button.classList.add(special);
+        return "Pressed"
+    }    
 }
-
-function multiplyChoice() { // Function to multiply
-    const displayTest = numberChoice.reduce((total, element) => total + element, "") // Sum
-    firstValue = parseInt(displayTest); // Converts to number type
-    numberChoice.length = 0; // Clear the numberChoice
-    operator = "Multiply"  
-    console.log("entrou no if, e o valor é " + firstValue)
-}
-
-function divideChoice() { // Function to divide
-    const displayTest = numberChoice.reduce((total, element) => total + element, "") // Sum
-    firstValue = parseInt(displayTest); // Converts to number type
-    numberChoice.length = 0; // Clear the numberChoice
-    operator = "Divide"  
-}
-
 
 function equalTheCount() { // Function to equal
-    const displayTest = numberChoice.reduce((total, element) => total + element, "") // Sum
-    if(operator === "Sum") {
-        secondValue = parseInt(displayTest);
-        numberChoice.length = 0;
-        displayContent.innerHTML = firstValue + secondValue
-        firstValue = 0;
-        secondValue = 0;
+    const agroupArray = numberChoice.reduce((total, element) => total + element, "") // Sum
+    if (finalResult !== 0) {
+        firstValue = parseFloat(agroupArray); // Converts to number type
+        switch (operator) {
+            case "Sum":
+                finalResult += firstValue
+            break;
+            case "Minus":
+                finalResult -= firstValue
+            break;
+            case "Multiply":
+                console.log(`${firstValue}`)
+                finalResult = firstValue * finalResult
+                console.log("caso multiply")
+            break;    
+            case "Divide":
+                finalResult /= firstValue
+        }
+    }
+    // Second Value Case
+    else if(operator === "Sum") {
+        secondValue = parseInt(agroupArray);
+        finalResult = firstValue + secondValue
     }
     else if(operator === "Minus") {
-        console.log(firstValue - secondValue)
-        displayContent.innerHTML = firstValue - secondValue
-        firstValue = 0;
-        secondValue = 0;
+        secondValue = parseInt(agroupArray);
+        finalResult = firstValue - secondValue
     }
     else if(operator === "Multiply") {
-        console.log(firstValue * secondValue)
-        displayContent.innerHTML = firstValue * secondValue
-        firstValue = 0;
-        secondValue = 0;
+        secondValue = parseInt(agroupArray);
+        finalResult = firstValue * secondValue
     }
     else if (operator === "Divide") {
-        console.log(firstValue / secondValue)
-        displayContent.innerHTML = firstValue / secondValue
-        firstValue = 0;
-        secondValue = 0;
+        secondValue = parseInt(agroupArray);
+        finalResult = firstValue / secondValue
     }
+
+    displayContent.innerHTML = finalResult
+    numberChoice.length = 0;
+    operator = "";
+    removeSelection();
+    // firstValue = 0; 
+    secondValue = 0;
 }
 
 function displayMessage(number) {
     let currentContent = displayContent.innerHTML;
-    if (currentContent === "0") {  
-    displayContent.innerHTML = number }
+    if (currentContent === "0" && number === ",") {
+    console.log("entrou no if")  
+    displayContent.innerHTML = currentContent + number }
+    else if(number === "-") {
+        displayContent.innerHTML = number + currentContent}
+    else if(currentContent === "0") {
+        displayContent.innerHTML = number
+    }
     else {
+        console.log("entrou no else")
         displayContent.innerHTML = currentContent + number;
     }
 }
@@ -137,27 +162,46 @@ btnEight.addEventListener("click", () => {
 btnNine.addEventListener("click", () => {
     numberChoice.push("9");
     displayMessage(9); });
-
-sumBtn.addEventListener("click", sumChoice);
+    
 equalBtn.addEventListener("click", equalTheCount);
-divideBtn.addEventListener("click", divideChoice)
-multiplyBtn.addEventListener("click", multiplyChoice)
-minusBtn.addEventListener("click", minusChoice);
+sumBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    operatorClick("Sum")
+});
+divideBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    operatorClick("Divide")
+})
+multiplyBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    operatorClick("Multiply")
+})
+minusBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    operatorClick("Minus")
+});
 
 clearBtn.addEventListener("click", () => {
     displayContent.innerHTML = "0"
     operator = ""
-
+    numberChoice.length = 0
+    finalResult = 0
+    removeSelection();
 });
+
+commaBtn.addEventListener("click", () => {
+    numberChoice.push(".")
+    displayMessage(",")
+})
+ 
 signalConvert.addEventListener("click", () => {
-    firstValue * -1
-    secondValue * -1
+    numberChoice.unshift("-");
+    displayMessage("-")
 })
 
-// pressedBtns.forEach(btnEl => {
-//     btnEl.addEventListener('click', () => {
-//         document.querySelector('.special')?.classList.remove('special');
-//         btnEl.classList.add('special');
-//     })
-// })
-   
+function removeSelection() {
+const specialClass = document.querySelectorAll(".special")
+specialClass.forEach(element => {
+        element.classList.remove("special");
+        element.classList.add("crimson");})
+}
